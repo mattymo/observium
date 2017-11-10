@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 move_files(){
   mv -n /tmp/observium/scripts/* /opt/observium/scripts/
@@ -96,8 +96,21 @@ db_inst(){
 
 if [ "$(cat /opt/observium/html/db_inst.txt)" != 1 ]
 then
-  echo "1" > /opt/observium/html/db_inst.txt
+  # Wait for mysql to be up
+  DB_READY=no
+  for try in `seq 1 30`; do
+    if nc -w 1 $MYSQL_HOST 3306 </dev/null >/dev/null; then
+      DB_READY=yes
+      break
+    fi
+    sleep 1
+  done
+  if [[ "$DB_READY" == "no" ]]; then
+    echo "Exiting because database $MYSQL_HOST could not be reached." 1>&2
+    exit 1
+  fi
   db_inst
+  echo "1" > /opt/observium/html/db_inst.txt
 fi
 
 exec "$@"

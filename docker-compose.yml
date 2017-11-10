@@ -24,7 +24,7 @@ services:
           - observ_db
   web:
     restart: always
-    image: blackojack/observium-ce
+    image: observium
     cpu_count: 2
     cpu_percent: 80
     mem_limit: 1gb
