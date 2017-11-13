@@ -3,7 +3,7 @@ FROM centos:7
 MAINTAINER Raenko Ivan <admin@sysadminsk.ru>
 
 # Set install method (community or pro)
-ENV INSTALL_METHOD community 
+ENV INSTALL_METHOD community
 
 # Required for pro install method
 ENV SVN_REPO http://svn.observium.org/svn/observium/branches/stable
