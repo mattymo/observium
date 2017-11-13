@@ -46,6 +46,7 @@ COPY scripts/install_observium_community.sh /tmp
 COPY scripts/install_observium_pro.sh /tmp
 RUN /tmp/install_observium_${INSTALL_METHOD}.sh
 
+COPY virtustream_logo.png /opt/observium/html/images/virtustream_logo.png
 COPY scripts/install_rancid.sh /tmp
 RUN /tmp/install_rancid.sh
 
