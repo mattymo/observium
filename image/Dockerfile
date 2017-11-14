@@ -32,7 +32,8 @@ ENV SNMP_CON=Your\ Name\ \<your@email.address\>
 #ENV LANG ru_RU.utf8
 
 # Language specifics
-ENV LC_ALL C.UTF-8
+ENV LC_ALL C
+ENV LC_NUMERIC C
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
@@ -49,6 +50,8 @@ RUN /tmp/install_observium_${INSTALL_METHOD}.sh
 COPY virtustream_logo.png /opt/observium/html/images/virtustream_logo.png
 COPY scripts/install_rancid.sh /tmp
 RUN /tmp/install_rancid.sh
+COPY scripts/install_smokeping.sh /tmp
+RUN /tmp/install_smokeping.sh
 
 COPY scripts/rancid_run.sh /
 COPY scripts/update.sh /
@@ -56,6 +59,7 @@ COPY scripts/start.sh /
 
 COPY configs/supervisord.conf /etc/supervisord.conf
 COPY configs/supervisor.d/ /etc/supervisord.d/
+
 RUN chmod 600 /etc/supervisord.conf /etc/supervisord.d/*.ini
 
 WORKDIR /opt/observium
@@ -67,6 +71,7 @@ VOLUME ["/opt/observium/mibs"]
 VOLUME ["/opt/observium/scripts"]
 VOLUME ["/home/rancid/.ssh"]
 VOLUME ["/usr/local/rancid/var"]
+VOLUME ["/var/lib/smokeping"]
 
 EXPOSE 80
 EXPOSE 514/udp

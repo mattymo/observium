@@ -90,7 +90,6 @@ sed -i "s|0bs3rv1um|$SNMP_COMM|" /etc/snmp/snmpd.conf
 sed -i "s|Rack, Room, Building, City, Country \[GPSX,Y\]|$SNMP_LOC|" /etc/snmp/snmpd.conf
 sed -i "s|Your Name <your@email.address>|$SNMP_CON|" /etc/snmp/snmpd.conf
 
-
 chown -hR apache:apache /opt/observium/rrd
 chown -hR apache:apache /opt/observium/logs
 chown -hR apache:apache /opt/observium/html
@@ -120,5 +119,8 @@ then
   db_inst
   echo "1" > /opt/observium/html/db_inst.txt
 fi
+
+# Generate smokeping config
+php /opt/observium/scripts/generate-smokeping.php > /etc/smokeping/Targets
 
 exec "$@"
