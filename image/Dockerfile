@@ -38,7 +38,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
 # Install locales by reinstalling glibc-common
-RUN yum reinstall -y glibc-common
+#RUN yum reinstall -y glibc-common
 
 COPY scripts/install_system.sh /tmp
 RUN /tmp/install_system.sh
