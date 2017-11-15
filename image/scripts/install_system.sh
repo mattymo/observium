@@ -5,10 +5,9 @@ apt-get install -y apache2 composer fping git graphviz imagemagick \
   libapache2-mod-php7.0 mariadb-client mariadb-server mtr-tiny nmap php7.0-cli \
   php7.0-curl php7.0-gd php7.0-json php7.0-mcrypt php7.0-mysql php7.0-snmp \
   php7.0-xml php7.0-zip php7.0-opcache python-memcache python-mysqldb rrdtool \
-  snmp snmpd whois ipmitool wget rsyslog cron supervisor
+  snmp snmpd whois ipmitool wget rsyslog cron supervisor netcat-openbsd
 
-#Disable the default apache config
-a2dissite default
+a2enmod rewrite
 
 mkdir /tmp/php-opcache && chmod 777 /tmp/php-opcache
 sed -i 's|;opcache.enable_cli=0|opcache.enable_cli=1|' /etc/php/7.0/cli/php.ini

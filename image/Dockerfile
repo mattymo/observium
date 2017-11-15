@@ -54,7 +54,7 @@ COPY scripts/start.sh /
 COPY configs/supervisord.conf /etc/supervisor/supervisord.conf
 COPY configs/supervisor.d/ /etc/supervisor/conf.d/
 
-RUN chmod 600 /etc/supervisor/supervisord.conf /etc/supervisor/conf.d/*.ini
+RUN chmod 600 /etc/supervisor/supervisord.conf /etc/supervisor/conf.d/*.conf
 
 WORKDIR /opt/observium
 
@@ -63,8 +63,7 @@ VOLUME ["/opt/observium/logs"]
 VOLUME ["/opt/observium/html"]
 VOLUME ["/opt/observium/mibs"]
 VOLUME ["/opt/observium/scripts"]
-VOLUME ["/home/rancid/.ssh"]
-VOLUME ["/usr/local/rancid/var"]
+VOLUME ["/var/lib/rancid"]
 VOLUME ["/var/lib/smokeping"]
 
 EXPOSE 80

@@ -3,6 +3,8 @@
 apt-get update
 apt-get install -y libapache2-mod-fcgid smokeping sendmail
 touch /etc/smokeping/config.d/Targets
+sed -i 's|^sendmail|#sendmail|' /etc/smokeping/config.d/pathnames
+mkdir -p /var/run/smokeping
 
 # Enable smokeping in apache
 a2enconf smokeping

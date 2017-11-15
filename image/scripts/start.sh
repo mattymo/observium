@@ -34,6 +34,8 @@ a2enconf observium.conf
 sed -i "s|;date.timezone =|date.timezone =$TZ|" /etc/php/7.0/apache2/php.ini
 sed -i "s|;date.timezone =|date.timezone =$TZ|" /etc/php/7.0/cli/php.ini
 
+sed -i "s|rancid_pw|$ADMIN_PASSWORD|" /var/lib/rancid/.cloginrc
+
 if [[ "$GENERATE_CONFIG" == "yes" ]]; then
   sed -i "s|'localhost'|'$MYSQL_HOST'|" /opt/observium/config.php
   sed -i "s|'USERNAME'|'$MYSQL_USER'|" /opt/observium/config.php
@@ -93,11 +95,11 @@ sed -i "s|0bs3rv1um|$SNMP_COMM|" /etc/snmp/snmpd.conf
 sed -i "s|Rack, Room, Building, City, Country \[GPSX,Y\]|$SNMP_LOC|" /etc/snmp/snmpd.conf
 sed -i "s|Your Name <your@email.address>|$SNMP_CON|" /etc/snmp/snmpd.conf
 
-chown -hR www-user:www-user /opt/observium/rrd
-chown -hR www-user:www-user /opt/observium/logs
-chown -hR www-user:www-user /opt/observium/html
-chown -hR www-user:www-user /opt/observium/mibs
-chown -hR rancid:www-user /usr/local/rancid
+chown -hR www-data:www-data /opt/observium/rrd
+chown -hR www-data:www-data /opt/observium/logs
+chown -hR www-data:www-data /opt/observium/html
+chown -hR www-data:www-data /opt/observium/mibs
+chown -hR rancid:www-data /usr/local/rancid
 
 db_inst(){
   /opt/observium/discovery.php -u
@@ -109,7 +111,7 @@ then
   # Wait for mysql to be up
   DB_READY=no
   for try in `seq 1 30`; do
-    if nc -w 1 $MYSQL_HOST 3306 </dev/null >/dev/null; then
+    if nc -z -v -w 1 $MYSQL_HOST 3306 >/dev/null; then
       DB_READY=yes
       break
     fi
