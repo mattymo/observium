@@ -1,32 +1,21 @@
 #!/bin/bash
 
-yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum -y install https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
-yum -y install http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-# ignore cpio error on ubuntu build host
-yum -y install httpd.x86_64 || true
-yum -y install wget.x86_64 httpd.x86_64 mod_php56w.x86_64 httpd-devel.x86_64 httpd-itk.x86_64 httpd-manual.noarch httpd-tools.x86_64 mod_ssl.x86_64 php56w.x86_64 php56w-opcache.x86_64 php56w-mysqlnd.x86_64 php56w-gd.x86_64 php56w-pecl-apcu \
-  php56w-posix php56w-mcrypt.x86_64 php56w-pear.noarch cronie.x86_64 net-snmp.x86_64 yum-cron.noarch supervisor.noarch \
-  net-snmp-utils.x86_64 fping.x86_64 MySQL-python.x86_64 libvirt.x86_64 \
-  rrdtool.x86_64 subversion.x86_64 jwhois.x86_64 ipmitool.x86_64 graphviz.x86_64 ImageMagick.x86_64 mtr nmap rsyslog
+apt-get update
+apt-get install -y apache2 composer fping git graphviz imagemagick \
+  libapache2-mod-php7.0 mariadb-client mariadb-server mtr-tiny nmap php7.0-cli \
+  php7.0-curl php7.0-gd php7.0-json php7.0-mcrypt php7.0-mysql php7.0-snmp \
+  php7.0-xml php7.0-zip php7.0-opcache python-memcache python-mysqldb rrdtool \
+  snmp snmpd whois ipmitool wget rsyslog cron supervisor
 
-rpm -Uvh  http://www6.atomicorp.com/channels/atomic/centos/7/x86_64/RPMS/wmi-1.3.14-4.el7.art.x86_64.rpm
-
-yum clean all
-
-rm -f /etc/httpd/conf.d/welcome.conf
+#Disable the default apache config
+a2dissite default
 
 mkdir /tmp/php-opcache && chmod 777 /tmp/php-opcache
-sed -i 's|;opcache.enable_cli=0|opcache.enable_cli=1|' /etc/php.d/opcache.ini
-echo 'opcache.file_cache=/tmp/php-opcache' >> /etc/php.d/opcache.ini
+sed -i 's|;opcache.enable_cli=0|opcache.enable_cli=1|' /etc/php/7.0/cli/php.ini
+sed -i 's|;opcache.file_cache=|opcache.file_cache=/tmp/php-opcache|' /etc/php/7.0/cli/php.ini
 
-sed -i "s|#\$ModLoad imudp|\$ModLoad imudp|" /etc/rsyslog.conf
-sed -i "s|#\$UDPServerRun 514|\$UDPServerRun 514|" /etc/rsyslog.conf
-
-mkdir -p /var/lock/subsys
-touch /var/lock/subsys/yum-cron
-sed -i 's/apply_updates = no/apply_updates = yes/' /etc/yum/yum-cron.conf
-sed -i 's/apply_updates = no/apply_updates = yes/' /etc/yum/yum-cron-hourly.conf
+sed -i 's|#module(load="imudp")|module(load="imudp")|' /etc/rsyslog.conf
+echo '$UDPServerRun 514' >> /etc/rsyslog.conf
 
 cat <<EOF > /etc/rsyslog.d/30-observium.conf
 #---------------------------------------------------------

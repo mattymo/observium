@@ -13,7 +13,7 @@ then
   move_files
 fi
 
-cat <<EOF > /etc/httpd/conf.d/observium.conf
+cat <<EOF > /etc/apache2/conf-available/observium.conf
 <VirtualHost *:80>
    DocumentRoot /opt/observium/html/
    ServerAdmin $ADMIN_EMAIL
@@ -27,9 +27,12 @@ cat <<EOF > /etc/httpd/conf.d/observium.conf
 </VirtualHost>
 EOF
 
-sed -i "s|#ServerName www.example.com:80|ServerName $DOMAIN:80|" /etc/httpd/conf/httpd.conf
+a2enconf observium.conf
 
-sed -i "s|;date.timezone =|date.timezone =$TZ|" /etc/php.ini
+#sed -i "s|#ServerName www.example.com:80|ServerName $DOMAIN:80|" /etc/httpd/conf/httpd.conf
+
+sed -i "s|;date.timezone =|date.timezone =$TZ|" /etc/php/7.0/apache2/php.ini
+sed -i "s|;date.timezone =|date.timezone =$TZ|" /etc/php/7.0/cli/php.ini
 
 if [[ "$GENERATE_CONFIG" == "yes" ]]; then
   sed -i "s|'localhost'|'$MYSQL_HOST'|" /opt/observium/config.php
@@ -90,11 +93,11 @@ sed -i "s|0bs3rv1um|$SNMP_COMM|" /etc/snmp/snmpd.conf
 sed -i "s|Rack, Room, Building, City, Country \[GPSX,Y\]|$SNMP_LOC|" /etc/snmp/snmpd.conf
 sed -i "s|Your Name <your@email.address>|$SNMP_CON|" /etc/snmp/snmpd.conf
 
-chown -hR apache:apache /opt/observium/rrd
-chown -hR apache:apache /opt/observium/logs
-chown -hR apache:apache /opt/observium/html
-chown -hR apache:apache /opt/observium/mibs
-chown -hR rancid:apache /usr/local/rancid
+chown -hR www-user:www-user /opt/observium/rrd
+chown -hR www-user:www-user /opt/observium/logs
+chown -hR www-user:www-user /opt/observium/html
+chown -hR www-user:www-user /opt/observium/mibs
+chown -hR rancid:www-user /usr/local/rancid
 
 db_inst(){
   /opt/observium/discovery.php -u
@@ -123,4 +126,6 @@ fi
 # Generate smokeping config
 php /opt/observium/scripts/generate-smokeping.php > /etc/smokeping/Targets
 
+# Make supervisor log dir
+mkdir -p /opt/observium/logs/supervisor
 exec "$@"

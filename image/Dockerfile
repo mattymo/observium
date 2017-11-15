@@ -1,6 +1,5 @@
-# Version: 17.9.0
-FROM centos:7
-MAINTAINER Raenko Ivan <admin@sysadminsk.ru>
+FROM phusion/baseimage:0.9.22
+MAINTAINER Matthew Mosesohn <matthew.mosesohn@virtustream.com>
 
 # Set install method (community or pro)
 ENV INSTALL_METHOD community
@@ -26,19 +25,14 @@ ENV SNMP_COMM=public
 ENV SNMP_LOC=Rack,\ Room,\ Building,\ City,\ Country\ \[GPSX,Y\]
 ENV SNMP_CON=Your\ Name\ \<your@email.address\>
 
-#RUN localedef -i ru_RU -f UTF-8 ru_RU.UTF-8 && \
-#  cp -f /usr/share/zoneinfo/Asia/Novosibirsk /etc/localtime
-#
-#ENV LANG ru_RU.utf8
+#Set to no if deploying with helm
+ENV GENERATE_CONFIG yes
 
 # Language specifics
 ENV LC_ALL C
 ENV LC_NUMERIC C
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
-
-# Install locales by reinstalling glibc-common
-#RUN yum reinstall -y glibc-common
 
 COPY scripts/install_system.sh /tmp
 RUN /tmp/install_system.sh
@@ -57,10 +51,10 @@ COPY scripts/rancid_run.sh /
 COPY scripts/update.sh /
 COPY scripts/start.sh /
 
-COPY configs/supervisord.conf /etc/supervisord.conf
-COPY configs/supervisor.d/ /etc/supervisord.d/
+COPY configs/supervisord.conf /etc/supervisor/supervisord.conf
+COPY configs/supervisor.d/ /etc/supervisor/conf.d/
 
-RUN chmod 600 /etc/supervisord.conf /etc/supervisord.d/*.ini
+RUN chmod 600 /etc/supervisor/supervisord.conf /etc/supervisor/conf.d/*.ini
 
 WORKDIR /opt/observium
 

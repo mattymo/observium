@@ -1,13 +1,10 @@
 #!/bin/bash
-#
-#
-#
-
-yum -y -q install subversion gcc expect sendmail automake openssh-clients
+apt-get update
+apt-get install -y subversion gcc expect sendmail automake openssh-clients
 
 groupadd rancid
 useradd -g rancid -c "Networking Backups" -d /home/rancid rancid
-usermod -a -G rancid apache
+usermod -a -G rancid www-data
 mkdir -p /home/rancid/tar && cd /home/rancid/tar/ && wget ftp://ftp.shrubbery.net/pub/rancid/rancid-3.7.tar.gz && tar -zxvf rancid-3.7.tar.gz
 cd /home/rancid/tar/rancid-3.7 && ./configure --prefix=/usr/local/rancid && make install
 cat <<EOF > /home/rancid/.cloginrc
