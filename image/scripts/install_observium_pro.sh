@@ -1,8 +1,8 @@
 #!/bin/bash
+apt-get install -y subversion
 
+cd /opt && svn co -q $SVN_REPO --username $SVN_USER --password $SVN_PASS observium
 mkdir -p /opt/observium/{rrd,logs,mibs}
-cd /opt && svn co $SVN_REPO --username $SVN_USE
-wget http://www.observium.org/observium-community-latest.tar.gz && tar zxvf observium-community-latest.tar.gz && rm -f observium-community-latest.tar.gz
 mv /opt/observium/config.php.default /opt/observium/config.php
 cp /opt/observium/scripts/distro /usr/bin/distro
 echo "0" > /opt/observium/html/moved.txt

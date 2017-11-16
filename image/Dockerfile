@@ -1,15 +1,6 @@
 FROM phusion/baseimage:0.9.22
 MAINTAINER Matthew Mosesohn <matthew.mosesohn@virtustream.com>
 
-# Set install method (community or pro)
-ENV INSTALL_METHOD community
-
-# Required for pro install method
-ENV SVN_REPO http://svn.observium.org/svn/observium/branches/stable
-ENV SVN_DEST /opt/observium
-ENV SVN_USER svn_user
-ENV SVN_PASS svn_pass
-
 ENV MYSQL_HOST observ_db
 ENV MYSQL_DATABASE observium
 ENV MYSQL_USER observium
@@ -39,6 +30,14 @@ RUN /tmp/install_system.sh
 
 COPY scripts/install_observium_community.sh /tmp
 COPY scripts/install_observium_pro.sh /tmp
+
+# Set install method (community or pro)
+ARG INSTALL_METHOD=community
+# Required for pro install method
+ARG SVN_REPO=http://svn.observium.org/svn/observium/branches/stable
+ARG SVN_DEST=/opt/observium
+ARG SVN_USER=svn_user
+ARG SVN_PASS=svn_pass
 RUN /tmp/install_observium_${INSTALL_METHOD}.sh
 
 COPY virtustream_logo.png /opt/observium/html/images/virtustream_logo.png
