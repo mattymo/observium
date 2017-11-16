@@ -30,6 +30,7 @@ RUN /tmp/install_system.sh
 
 COPY scripts/install_observium_community.sh /tmp
 COPY scripts/install_observium_pro.sh /tmp
+COPY observium/ /opt/observium/
 
 # Set install method (community or pro)
 ARG INSTALL_METHOD=community

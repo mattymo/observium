@@ -1,7 +1,9 @@
 #!/bin/bash
 apt-get install -y subversion
 
-cd /opt && svn co -q $SVN_REPO --username $SVN_USER --password $SVN_PASS observium
+if ! [ -e /opt/observium/.svn ]; then
+  cd /opt && svn co -q $SVN_REPO --username $SVN_USER --password $SVN_PASS observium
+fi
 mkdir -p /opt/observium/{rrd,logs,mibs}
 mv /opt/observium/config.php.default /opt/observium/config.php
 cp /opt/observium/scripts/distro /usr/bin/distro

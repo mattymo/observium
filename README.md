@@ -1,48 +1,72 @@
 # observium
 Observium docker image and docker-compose.yml
 
-Собран вместе с RANCID (ежедневный бэкап конфигураций mikrotik) и syslog (можете отправлять все логи с хостов на observer)
+Built with RANCID, rsyslog, and smokeping
 
-## Простой способ (docker-compose):
-1. У вас должен быть установлен [docker](https://docs.docker.com/engine/installation/), [docker-compose](https://docs.docker.com/compose/install/) и git
+## Simple method (docker-compose):
+1. Install [docker](https://docs.docker.com/engine/installation/), [docker-compose](https://docs.docker.com/compose/install/) and git
 
-2. Скачиваем репозиторий:
+2. Clone this repository
 ```
-$ git clone https://github.com/BlackoJack/observium.git observium
+$ git clone $THIS_GIT_REPO
 $ cd observium
 ```
 
-3. 
-      - Открываем `mysql.env`, если хотим меняем пользователя, имя базы, пароль root и пароль пользователя базы
-      - Открываем `observium.env`, меняем Домен на свой, данные администратора админки и данные snmp(community, location, contact). Все пробелы и спецсимволы должны быть экранированы слэшем \. В примере показано.
-      - Если нужно поменять Timezone или Lang, открываем `system.env` и меняем
+3. Set config
+      - Open and modify `mysql.env`, if you want to configure parameters.
+      - Open and modify `observium.env`, and change the domain and admin credentials.
+      - Set Timezone and Lang in `system.env`
 
-4. Открываем docker-compose.yml
-      - По желанию меняем порты. В данном случае используется порт 8080 - админка и порт 514/udp - syslog-сервер
-      - Проверяем все пути в разделах volumes, при желании меняем, там будут хранится разные данные, а именно:
-- `/data/docker/observium/data/mysql` - сама база MySQL
-- `/data/docker/observium/data/rrd` - графики rrd
-- `/data/docker/observium/data/logs` - различные логи observium-а
-- `/data/docker/observium/data/html` - html файлы
+4. Open docker-compose.yml
+      - Set ports if desired. Observium listens on 8080, 514/udp for syslog.
+      - Below are the list of volumes used:
+- `/data/docker/observium/data/mysql` - MySQL
+- `/data/docker/observium/data/rrd` - rrd
+- `/data/docker/observium/data/logs` - observium logs
+- `/data/docker/observium/data/html` - html data
 - `/data/docker/observium/data/mibs` - mibs snmp
-- `/data/docker/observium/data/scripts` - скрипты (могут понадобится для linux-хостов, документация в офф. мане [тут](http://docs.observium.org/unix_agent/) и [тут](http://docs.observium.org/apps/))
-- `/data/docker/observium/data/ssh_keys` - сюда нужно положить ключ id_rsa. Про ключ читаем в конце
-- `/data/docker/observium/data/rancid_configs` - сюда RANCID будет скидывать конфигурации Mikrotik-ов
-- `/data/docker/observium/data/rancid_logs` - логи RANCID
+- `/data/docker/observium/data/scripts` - scripts
+- `/data/docker/observium/data/ssh_keys` - Read later for ssh key details
+- `/data/docker/observium/data/rancid_configs` - set RANCID config here
+- `/data/docker/observium/data/rancid_logs` - RANCID logs
 
-5. Запускаем сервис:
+5. Start the services
 ```
 $ docker-compose up -d
 ```
 
-6. Для чего ключ id_rsa?
-С помощью ключа служба RANCID должна заходить на устройства Mikrotik безпарольно, чтобы забирать конфигурации. Внимание! passphrase на ключ должен быть пустым. Пользователь на mikrotik должен называться rancid
-      - Чтобы сделать ключ на linux выполняем:
+6. What is id_rsa for?
+Using RANCID to connect to network devices without a password, it should have a
+key to log in. Do not set a passphrase on the key. Devices should have a user
+named rancid.
 ```
 $ ssh-keygen -t rsa
 $ scp ~/.ssh/id_rsa.pub admin@<mikrotik_ip>:mykey.pub
 ```
-Passphrase! не заполняем. Заводим пользователя rancid на mikrotik(можно только для чтения) и импортируем ему наш ключ:
+
+### Professional image build
+This is the easiest method for building, but it leaves the credentials in
+`docker history`.
+
 ```
-> user ssh-keys import user=rancid public-key-file=mykey.pub
+cd images
+docker build \
+  --build-arg INSTALL_METHOD=pro \
+  --build-arg SVN_USER=MYUSER \
+  --build-arg SVN_PASS=SECRET \
+  -t observium \
+  .
+```
+
+In order to build without saving the credentials, use this approach instead:
+
+```
+cd images
+svn co -q $SVN_REPO --username $SVN_USER --password $SVN_PASS observium
+docker build \
+  --build-arg INSTALL_METHOD=pro \
+  --build-arg SVN_USER=MYUSER \
+  --build-arg SVN_PASS=SECRET \
+  -t observium \
+  .
 ```
