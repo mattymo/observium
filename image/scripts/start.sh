@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 move_files(){
   mv -n /tmp/observium/scripts/* /opt/observium/scripts/

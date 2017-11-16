@@ -15,6 +15,10 @@ php /opt/observium/scripts/generate-smokeping.php > /etc/smokeping/config.d/Targ
 smokeping --reload
 EOF
 
+cat << EOF >> /opt/observium/config.php
+    \$config['smokeping']['dir'] = "/var/lib/smokeping/Local/";
+EOF
+
 chmod +x /opt/observium/scripts/reload-smokeping.php
 
 echo "10 * * * * root /opt/observium/scripts/reoad-smokeping.php 2>/dev/null" >> /etc/crontab
